@@ -1,35 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".PantryFragment"
     android:padding="16dp">
 
-    <!-- This is just a test thing -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Pantry"
-        android:textSize="16sp" />
-
-    <!-- TOOD:
-    - Add a search bar
-    https://developer.android.com/develop/ui/compose/components/search-bar
-    - Add a way to sort the pantry by different criteria
-    - Get the thing actually working
-    - The item views shouldn't actually be TextViews-they should be rounded blocks that the user can click on to view extra information
+    <!-- TODO:
+    - Make the search bar actually function
+    - Make the filtering button actually function
     -->
-
-    <androidx.core.widget.NestedScrollView
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/search_bar_appbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".PantryFragment">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/pantry_container_view"
+        android:layout_height="wrap_content">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="16dp" />
-    </androidx.core.widget.NestedScrollView>
-</FrameLayout>
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Search bar -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.FilledBox"
+                android:id="@+id/search_bar_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:startIconDrawable="@drawable/ic_search"
+                app:boxCornerRadiusBottomEnd="28dp"
+                app:boxCornerRadiusBottomStart="28dp"
+                app:boxCornerRadiusTopEnd="28dp"
+                app:boxCornerRadiusTopStart="28dp"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
+                app:endIconDrawable="@drawable/ic_clear_field"
+                app:endIconMode="clear_text">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/search_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/search_pantry" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Button to bring up the sorting dialog -->
+            <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3.Button.IconButton"
+                android:id="@+id/filter_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:icon="@drawable/ic_filter_list"/>
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- This is only for testing, so feel free to remove -->
+    <!-- TODO:
+    - Add (something) that allows the user to scroll through like 25 elements at a time
+    - Add a paginator of the format < # >
+    -->
+    <include layout="@layout/card_item_pantry" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
