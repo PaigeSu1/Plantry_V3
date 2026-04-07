@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.search.SearchBar;
+import com.google.android.material.search.SearchView;
 import com.seproject.plantry.adapter.PantryAdapter;
 import com.seproject.plantry.database.PantryDao;
 import com.seproject.plantry.database.PantryDatabase;
@@ -40,10 +42,12 @@ public class PantryFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_pantry, container, false);
 
-        recyclerView = root.findViewById(R.id.pantry_container_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        // The recyclerview stuff was commented out in order to test the pantry item cards
+        // recyclerView = root.findViewById(R.id.pantry_container_view);
+        // recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         adapter = new PantryAdapter(new ArrayList<>());
-        recyclerView.setAdapter(adapter);
+        // recyclerView.setAdapter(adapter);
 
         PantryDatabase db = PantryDatabase.getInstance(getContext());
         PantryDao dao = db.pantryDao();
