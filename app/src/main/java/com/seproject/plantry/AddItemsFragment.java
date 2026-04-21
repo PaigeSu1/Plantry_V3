@@ -8,11 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AddItemsFragment} factory method to
- * create an instance of this fragment.
- */
+/// The fragment for any logic pertaining to adding items to the db
 public class AddItemsFragment extends Fragment {
 
     public AddItemsFragment() {
