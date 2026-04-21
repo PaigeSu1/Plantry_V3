@@ -49,4 +49,8 @@
     <string name="qty">Qty</string>
     <string name="expiration">Expiration</string>
     <string name="search_pantry">Search Pantry</string>
+    <string name="sort_button">Sort the pantry</string>
+    <string name="buy">Buy</string>
+    <string name="warning_icon">Informs the user of approaching or past expiry</string>
+    <string name="show_more_options">Show more options</string>
 </resources>
