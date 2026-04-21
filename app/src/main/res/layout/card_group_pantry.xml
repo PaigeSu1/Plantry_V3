@@ -5,17 +5,21 @@
     android:layout_height="56dp"
     android:clickable="true"
     app:cardBackgroundColor="?attr/colorSurfaceContainer"
-    app:cardCornerRadius="28dp">
+    app:cardCornerRadius="28dp"
+    android:outlineProvider="none"
+    android:clipChildren="false">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+        android:paddingEnd="16dp"
+        android:layout_gravity="center_vertical">
 
         <TextView
             android:id="@+id/item_name"
             android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="@string/item_name"
             android:textSize="16sp"
@@ -44,14 +48,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_error"
+                android:contentDescription="@string/warning_icon"
                 android:layout_marginEnd="8dp" />
 
             <ImageView
                 android:id="@+id/right_arrow_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/navigate_to_the_group_viewer"
                 android:src="@drawable/ic_arrow_right" />
         </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
