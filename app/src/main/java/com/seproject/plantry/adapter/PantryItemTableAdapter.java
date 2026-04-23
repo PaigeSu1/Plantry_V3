@@ -3,9 +3,12 @@ package com.seproject.plantry.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.seproject.plantry.R;
 import com.seproject.plantry.database.PantryItem;
@@ -38,9 +41,19 @@ public class PantryItemTableAdapter extends ListAdapter<PantryItem, PantryItemTa
 
     @Override
     public void onBindViewHolder(@NonNull PantryItemTableAdapter.PantryItemTableViewHolder holder, int position) {
-        PantryItem item = items.get(position);
+        PantryItem item = getItem(position);
         holder.quantity.setText(String.valueOf(item.quantity));
         holder.buy.setText(String.valueOf(item.buyDate));
         holder.expiration.setText(String.valueOf(item.expirationDate));
+    }
+
+    static class PantryItemTableViewHolder extends RecyclerView.ViewHolder{
+        TextView quantity, buy, expiration;
+        public PantryItemTableViewHolder(@NonNull View itemView){
+            super(itemView);
+            quantity=itemView.findViewById(R.id.item_quantity);
+            buy=itemView.findViewById(R.id.item_buy_date);
+            expiration=itemView.findViewById(R.id.item_expiration_date);
+        }
     }
 }

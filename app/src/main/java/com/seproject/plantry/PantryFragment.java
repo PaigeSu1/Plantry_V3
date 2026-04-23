@@ -54,7 +54,7 @@ public class PantryFragment extends Fragment {
         // adapter = new PantryGroupAdapter(new ArrayList<>());
         // recyclerView.setAdapter(adapter);
 
-        PantryGroup testGroup = new PantryGroup("Test", "Test", true, "mm/dd/yyyy");
+        PantryGroup testGroup = new PantryGroup("Test", "Test", "mm/dd/yyyy");
         PantryItem testItem = new PantryItem("Test", 1, "mm/dd/yyyy", "mm/dd/yyyy");
 
         // adapter.addItem(testGroup);
