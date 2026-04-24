@@ -46,7 +46,12 @@ public class PantryFragment extends Fragment {
         recyclerView = root.findViewById(R.id.pantry_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adapter = new PantryGroupAdapter(new ArrayList<>());
+        adapter = new PantryGroupAdapter(new ArrayList<>(), group -> {
+            Bundle bundle = new Bundle();
+            bundle.putString("groupName", group.name);
+            androidx.navigation.fragment.NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_pantryFragment_to_pantryGroupFragment, bundle);
+        });
         recyclerView.setAdapter(adapter);
 
         // Observe the database and update the list when data changes

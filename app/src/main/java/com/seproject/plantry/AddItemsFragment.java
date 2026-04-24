@@ -110,6 +110,13 @@ public class AddItemsFragment extends Fragment {
         String category = categoryInput.getText().toString().trim();
         String date = buyDateInput.getText().toString().trim();
 
+        // If no date was picked, use the current day's date as default
+        if (date.isEmpty()) {
+            String myFormat = "MM/dd/yyyy";
+            SimpleDateFormat dateFormat = new SimpleDateFormat(myFormat, Locale.US);
+            date = dateFormat.format(Calendar.getInstance().getTime());
+        }
+
         if (name.isEmpty() || qtyStr.isEmpty() || category.isEmpty()) {
             Toast.makeText(getContext(), "Please fill in all required fields", Toast.LENGTH_SHORT).show();
             return;

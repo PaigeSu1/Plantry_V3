@@ -42,7 +42,15 @@ public class PantryViewModel extends AndroidViewModel {
         executorService.execute(() -> itemDao.insert(item));
     }
 
-    public LiveData<List<PantryItem>> getItems() {
-        return itemDao.getAllItems();
+    public LiveData<List<PantryItem>> getItemsByName(String name) {
+        return itemDao.getItemsByName(name);
+    }
+
+    public void updateItem(PantryItem item) {
+        executorService.execute(() -> itemDao.update(item));
+    }
+
+    public void deleteItem(PantryItem item) {
+        executorService.execute(() -> itemDao.delete(item));
     }
 }

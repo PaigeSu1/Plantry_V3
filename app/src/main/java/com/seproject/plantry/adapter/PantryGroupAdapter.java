@@ -1,9 +1,9 @@
 package com.seproject.plantry.adapter;
 
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,62 +12,120 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.seproject.plantry.R;
 import com.seproject.plantry.database.PantryGroup;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-/**
- * The adapter for pantry groups to be put into a RecyclerView
- */
-public class PantryGroupAdapter extends RecyclerView.Adapter<PantryGroupAdapter.PantryGroupViewHolder> {
+public class PantryGroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<PantryGroup> items;
+    private static final int TYPE_HEADER = 0;
+    private static final int TYPE_ITEM = 1;
 
-    public PantryGroupAdapter(List<PantryGroup> items) {
-        this.items = items;
+    private List<Object> flatItems = new ArrayList<>();
+    private OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onItemClick(PantryGroup group);
+    }
+
+    public PantryGroupAdapter(List<PantryGroup> items, OnItemClickListener listener) {
+        this.listener = listener;
+        setItems(items);
+    }
+
+    public void setItems(List<PantryGroup> items) {
+        flatItems.clear();
+        if (items != null) {
+            Map<String, List<PantryGroup>> grouped = new HashMap<>();
+            for (PantryGroup item : items) {
+                String cat = item.category != null ? item.category : "Uncategorized";
+                if (!grouped.containsKey(cat)) {
+                    grouped.put(cat, new ArrayList<>());
+                }
+                grouped.get(cat).add(item);
+            }
+
+            List<String> categories = new ArrayList<>(grouped.keySet());
+            Collections.sort(categories);
+
+            for (String category : categories) {
+                flatItems.add(category); // Add Header
+                flatItems.add(grouped.get(category)); // Keep items together if needed, but here we flatten
+                List<PantryGroup> groupItems = grouped.get(category);
+                flatItems.addAll(groupItems);
+                flatItems.remove(flatItems.size() - groupItems.size() - 1); // remove the list object
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return flatItems.get(position) instanceof String ? TYPE_HEADER : TYPE_ITEM;
     }
 
     @NonNull
     @Override
-    public PantryGroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_pantry, parent, false);
-        return new PantryGroupViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == TYPE_HEADER) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_category_header, parent, false);
+            return new HeaderViewHolder(view);
+        } else {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pantry, parent, false);
+            return new ItemViewHolder(view);
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PantryGroupViewHolder holder, int position) {
-        PantryGroup item = items.get(position);
-        holder.name.setText(item.name);
-        // category or state could be added here
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof HeaderViewHolder) {
+            ((HeaderViewHolder) holder).headerText.setText((String) flatItems.get(position));
+        } else {
+            PantryGroup group = (PantryGroup) flatItems.get(position);
+            ItemViewHolder itemHolder = (ItemViewHolder) holder;
+            itemHolder.name.setText(group.name);
+            
+            // Handle Status Icon based on expiryState
+            if ("expired".equals(group.expiryState)) {
+                itemHolder.statusIcon.setVisibility(View.VISIBLE);
+                itemHolder.statusIcon.setImageResource(R.drawable.ic_error);
+                itemHolder.statusIcon.setColorFilter(itemHolder.itemView.getContext().getColor(R.color.md_theme_error));
+            } else if ("soon".equals(group.expiryState)) {
+                itemHolder.statusIcon.setVisibility(View.VISIBLE);
+                itemHolder.statusIcon.setImageResource(R.drawable.ic_error); // Replace with warning icon if available
+                itemHolder.statusIcon.setColorFilter(itemHolder.itemView.getContext().getColor(R.color.md_theme_tertiary)); // Yellowish/Orange
+            } else {
+                itemHolder.statusIcon.setVisibility(View.GONE);
+            }
+
+            itemHolder.itemView.setOnClickListener(v -> {
+                if (listener != null) listener.onItemClick(group);
+            });
+        }
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return flatItems.size();
     }
 
-    static class PantryGroupViewHolder extends RecyclerView.ViewHolder {
-        TextView name;
-
-        public PantryGroupViewHolder(@NonNull View groupView) {
-            super(groupView);
-            name = itemView.findViewById(R.id.item_name);
+    static class HeaderViewHolder extends RecyclerView.ViewHolder {
+        TextView headerText;
+        HeaderViewHolder(View itemView) {
+            super(itemView);
+            headerText = itemView.findViewById(R.id.category_header);
         }
     }
 
-    /**
-     * Set the contents of the items field
-     * @param items The complete data to be held in the adapter
-     */
-    public void setItems(List<PantryGroup> items) {
-        this.items = items;
-        notifyDataSetChanged();
-    }
-
-    /*
-     * Manually add an item to the array (Only for testing purposes)
-     */
-    public void addItem(PantryGroup item) {
-        items.add(item);
-        notifyItemInserted(items.size() - 1);
+    static class ItemViewHolder extends RecyclerView.ViewHolder {
+        TextView name;
+        ImageView statusIcon;
+        ItemViewHolder(View itemView) {
+            super(itemView);
+            name = itemView.findViewById(R.id.item_name);
+            statusIcon = itemView.findViewById(R.id.item_status_icon);
+        }
     }
 }

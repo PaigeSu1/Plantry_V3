@@ -24,6 +24,9 @@ public interface PantryItemDao {
     @Delete
     void delete(PantryItem item);
 
-    @Query("SELECT * FROM pantry_items")
-    LiveData<List<PantryItem>> getAllItems();
+    @Query("SELECT * FROM pantry_items WHERE name = :name")
+    LiveData<List<PantryItem>> getItemsByName(String name);
+
+    @Query("DELETE FROM pantry_items WHERE id = :id")
+    void deleteById(int id);
 }
