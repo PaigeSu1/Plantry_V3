@@ -64,4 +64,5 @@
     <string name="input_hint">Input</string>
     <string name="date_hint">mm/dd/yyyy</string>
     <string name="category">Category</string>
+    <string name="rename">Rename</string>
 </resources>

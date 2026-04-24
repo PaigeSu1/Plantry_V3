@@ -7,9 +7,19 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/pantry_group_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
+        app:title="Title"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_search"
-        app:titleCentered="false" />
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:titleCentered="false"
+        app:menu="@menu/menu_group_management"/>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:padding="16dp"
+        android:id="@+id/pantry_group_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scrollbars="vertical"
+        app:layout_constraintTop_toBottomOf="@id/pantry_group_toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
