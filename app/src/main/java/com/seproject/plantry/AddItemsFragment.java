@@ -91,9 +91,11 @@ public class AddItemsFragment extends Fragment {
             updateLabel();
         };
 
-        buyDateInput.setOnClickListener(v -> new DatePickerDialog(requireContext(), dateSetListener,
+        View.OnClickListener clickListener = v -> new DatePickerDialog(requireContext(), dateSetListener,
                 calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)).show());
+                calendar.get(Calendar.DAY_OF_MONTH)).show();
+
+        buyDateInput.setOnClickListener(clickListener);
     }
 
     private void updateLabel() {
@@ -113,7 +115,13 @@ public class AddItemsFragment extends Fragment {
             return;
         }
 
-        int quantity = Integer.parseInt(qtyStr);
+        int quantity;
+        try {
+            quantity = Integer.parseInt(qtyStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "Invalid quantity", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Save the item
         PantryItem newItem = new PantryItem(name, quantity, date, date); // Using same date for expiry as placeholder
@@ -125,6 +133,11 @@ public class AddItemsFragment extends Fragment {
 
         Toast.makeText(getContext(), "Item saved successfully", Toast.LENGTH_SHORT).show();
         clearFields();
+        
+        // Go back to the pantry view
+        if (getActivity() != null) {
+            getActivity().onBackPressed();
+        }
     }
 
     private void clearFields() {
