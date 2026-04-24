@@ -131,7 +131,14 @@ public class AddItemsFragment extends Fragment {
         }
 
         // Save the item
-        PantryItem newItem = new PantryItem(name, quantity, date, date); // Using same date for expiry as placeholder
+        boolean isDefaultDate = date.isEmpty();
+        if (isDefaultDate) {
+            String myFormat = "MM/dd/yyyy";
+            SimpleDateFormat dateFormat = new SimpleDateFormat(myFormat, Locale.US);
+            date = dateFormat.format(Calendar.getInstance().getTime());
+        }
+
+        PantryItem newItem = new PantryItem(name, quantity, date, date, isDefaultDate);
         viewModel.addItem(newItem);
 
         // Save the group/category if it's new

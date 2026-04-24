@@ -24,12 +24,14 @@ public class PantryItem {
     public int quantity;
     public String buyDate;
     public String expirationDate; // represents the time stamp
+    public boolean isDefaultDate;
 
-    public PantryItem(String name, int quantity, String buyDate, String expirationDate) {
+    public PantryItem(String name, int quantity, String buyDate, String expirationDate, boolean isDefaultDate) {
         this.name = name;
         this.quantity = quantity;
         this.buyDate = buyDate;
         this.expirationDate = expirationDate;
+        this.isDefaultDate = isDefaultDate;
     }
 
     public int getId() {

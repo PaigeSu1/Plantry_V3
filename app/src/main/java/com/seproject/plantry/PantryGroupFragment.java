@@ -1,6 +1,7 @@
 package com.seproject.plantry;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -24,7 +25,10 @@ import com.seproject.plantry.adapter.PantryItemAdapter;
 import com.seproject.plantry.database.PantryItem;
 import com.seproject.plantry.utils.PantryViewModel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class PantryGroupFragment extends Fragment {
 
@@ -49,6 +53,7 @@ public class PantryGroupFragment extends Fragment {
         }
 
         MaterialToolbar toolbar = root.findViewById(R.id.pantry_group_toolbar);
+        // Ensure the title is the name of the food (e.g., Apple)
         toolbar.setTitle(groupName != null ? groupName : "Item Details");
         
         NavController navController = NavHostFragment.findNavController(this);
@@ -77,8 +82,11 @@ public class PantryGroupFragment extends Fragment {
         
         popup.setOnMenuItemClickListener(menuItem -> {
             int id = menuItem.getItemId();
-            if (id == R.id.action_edit) {
+            if (id == R.id.action_edit_qty) {
                 showUpdateQuantityDialog(item);
+                return true;
+            } else if (id == R.id.action_edit_date) {
+                showChangeDateDialog(item);
                 return true;
             } else if (id == R.id.action_delete) {
                 viewModel.deleteItem(item);
@@ -110,5 +118,25 @@ public class PantryGroupFragment extends Fragment {
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         builder.show();
+    }
+
+    private void showChangeDateDialog(PantryItem item) {
+        final Calendar calendar = Calendar.getInstance();
+        
+        DatePickerDialog.OnDateSetListener dateSetListener = (view, year, month, dayOfMonth) -> {
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH, month);
+            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            
+            String myFormat = "MM/dd/yyyy";
+            SimpleDateFormat dateFormat = new SimpleDateFormat(myFormat, Locale.US);
+            item.expirationDate = dateFormat.format(calendar.getTime());
+            item.isDefaultDate = false; // User manually picked a date now
+            viewModel.updateItem(item);
+        };
+
+        new DatePickerDialog(requireContext(), dateSetListener,
+                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 }

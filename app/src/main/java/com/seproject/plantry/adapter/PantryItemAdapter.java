@@ -48,7 +48,7 @@ public class PantryItemAdapter extends RecyclerView.Adapter<PantryItemAdapter.Pa
         holder.quantity.setText(String.valueOf(item.quantity));
         holder.expiration.setText(item.expirationDate);
 
-        // Handle Status Icon
+        // Handle Status Icon and Default Date indicator
         updateStatusIcon(holder, item);
 
         holder.moreButton.setOnClickListener(v -> {
@@ -57,11 +57,23 @@ public class PantryItemAdapter extends RecyclerView.Adapter<PantryItemAdapter.Pa
     }
 
     private void updateStatusIcon(PantryViewHolder holder, PantryItem item) {
+        // Reset state
+        holder.statusIcon.setVisibility(View.GONE);
+        TooltipCompat.setTooltipText(holder.statusIcon, null);
+
         if (item.quantity <= 0) {
             holder.statusIcon.setVisibility(View.VISIBLE);
             holder.statusIcon.setImageResource(R.drawable.ic_error);
             holder.statusIcon.setColorFilter(holder.itemView.getContext().getColor(R.color.md_theme_error));
             TooltipCompat.setTooltipText(holder.statusIcon, "Out of stock");
+            return;
+        }
+
+        if (item.isDefaultDate) {
+            holder.statusIcon.setVisibility(View.VISIBLE);
+            holder.statusIcon.setImageResource(R.drawable.ic_schedule);
+            holder.statusIcon.setColorFilter(holder.itemView.getContext().getColor(R.color.md_theme_primary));
+            TooltipCompat.setTooltipText(holder.statusIcon, "Default date entered");
             return;
         }
 
