@@ -9,8 +9,19 @@
         android:id="@+id/pantryFragment"
         android:name="com.seproject.plantry.PantryFragment"
         android:label="Pantry"
-        tools:layout="@layout/fragment_pantry"
-        >
+        tools:layout="@layout/fragment_pantry">
+        <action
+            android:id="@+id/action_pantryFragment_to_pantryGroupFragment"
+            app:destination="@id/pantryGroupFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/pantryGroupFragment"
+        android:name="com.seproject.plantry.PantryGroupFragment"
+        android:label="Group Details"
+        tools:layout="@layout/fragment_group_pantry">
+        <argument
+            android:name="groupName"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/addItemsFragment"

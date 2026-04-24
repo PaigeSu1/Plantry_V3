@@ -47,13 +47,16 @@ public class PantryItemTableAdapter extends ListAdapter<PantryItem, PantryItemTa
         holder.expiration.setText(String.valueOf(item.expirationDate));
     }
 
-    static class PantryItemTableViewHolder extends RecyclerView.ViewHolder{
-        TextView quantity, buy, expiration;
-        public PantryItemTableViewHolder(@NonNull View itemView){
+    public static class PantryItemTableViewHolder extends RecyclerView.ViewHolder {
+        TextView quantity;
+        TextView buy;
+        TextView expiration;
+
+        public PantryItemTableViewHolder(@NonNull View itemView) {
             super(itemView);
-            quantity=itemView.findViewById(R.id.item_quantity);
-            buy=itemView.findViewById(R.id.item_buy_date);
-            expiration=itemView.findViewById(R.id.item_expiration_date);
+            quantity = itemView.findViewById(R.id.item_quantity);
+            buy = itemView.findViewById(R.id.item_buy_date);
+            expiration = itemView.findViewById(R.id.item_expiration_date);
         }
     }
 }

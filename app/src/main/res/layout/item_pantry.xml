@@ -1,53 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!-- How to make the internal database look readable Use options in top right corner to see view-->
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:padding="16dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="@color/md_theme_surfaceVariant"
+    app:strokeWidth="0dp">
 
-    <TextView
-        android:id="@+id/item_quantity"
-        android:layout_weight="1"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/qty"
-        android:textSize="16sp"/>
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/item_buy_date"
-        android:layout_weight="2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/buy"
-        android:textSize="16sp"/>
-
-    <TextView
-        android:id="@+id/item_expiration_date"
-        android:layout_weight="2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/expiration"
-        android:textSize="16sp"/>
-
-
-        <com.google.android.material.button.MaterialButton
-            style="@style/Widget.Material3.Button.IconButton"
-            android:id="@+id/item_warning_icon"
-            android:layout_width="48dp"
+        <TextView
+            android:id="@+id/item_name"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/warning_icon"
-            android:src="@drawable/ic_error"/>
+            android:text="Item Name"
+            android:textSize="16sp"
+            android:textColor="@color/md_theme_onSurface"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/item_status_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.button.MaterialButton
-            style="@style/Widget.Material3.Button.IconButton"
-            android:id="@+id/item_more_button"
-            android:layout_width="48dp"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/show_more_options"
-            app:icon="@drawable/ic_more"/>
-</LinearLayout>
+        <ImageView
+            android:id="@+id/item_status_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_error"
+            android:tint="@color/md_theme_error"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/arrow_icon"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/arrow_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_chevron_right"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Hidden placeholders for adapter compatibility -->
+        <TextView android:id="@+id/item_quantity" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+        <View android:id="@+id/item_buy_date" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+        <View android:id="@+id/item_expiration_date" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+        <View android:id="@+id/item_more_button" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -54,4 +54,15 @@
     <string name="warning_icon">Informs the user of approaching or past expiry</string>
     <string name="show_more_options">Show more options</string>
     <string name="navigate_to_the_group_viewer">Navigate to the group viewer</string>
+    <string name="manual">Manual</string>
+    <string name="scan">Scan</string>
+    <string name="has_expiration_date">Has Expiration Date</string>
+    <string name="buy_date">Expiration Date</string>
+    <string name="fruit">Fruit</string>
+    <string name="meat">Meat</string>
+    <string name="vegetable">Vegetable</string>
+    <string name="input_hint">Input</string>
+    <string name="date_hint">mm/dd/yyyy</string>
+    <string name="category">Category</string>
+    <string name="rename">Rename</string>
 </resources>

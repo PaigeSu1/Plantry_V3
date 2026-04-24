@@ -7,7 +7,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 /// The database for all data in the app
-@Database(entities = {PantryItem.class, PantryGroup.class}, version = 1)
+@Database(entities = {PantryItem.class, PantryGroup.class}, version = 2)
 public abstract class PantryDatabase extends RoomDatabase {
     private static PantryDatabase instance;
     public abstract PantryItemDao pantryItemDao();
