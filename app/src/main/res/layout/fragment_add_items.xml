@@ -117,17 +117,26 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/quantityLayout" />
 
-            <!-- Buy Date Field (Row 3, Full Width) -->
+            <TextView
+                android:id="@+id/buyDateLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/buy_date"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorPrimary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/expiryCheckbox" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/buyDateLayout"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:hint="@string/buy_date"
+                android:layout_marginTop="8dp"
                 app:endIconDrawable="@drawable/ic_schedule"
                 app:endIconMode="custom"
-                app:layout_constraintTop_toBottomOf="@id/expiryCheckbox">
+                app:layout_constraintTop_toBottomOf="@id/buyDateLabel">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/buyDateInput"
@@ -170,5 +179,10 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
+    <nl.dionsegijn.konfetti.xml.KonfettiView
+        android:id="@+id/konfettiView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

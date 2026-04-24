@@ -47,6 +47,7 @@ dependencies {
     implementation(libs.room.compiler)
     implementation(libs.room.runtime)
     implementation(libs.preference)
+    implementation("nl.dionsegijn:konfetti-xml:2.0.4")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

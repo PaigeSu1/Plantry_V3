@@ -16,6 +16,15 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+
+import nl.dionsegijn.konfetti.core.Party;
+import nl.dionsegijn.konfetti.core.PartyFactory;
+import nl.dionsegijn.konfetti.core.emitter.Emitter;
+import nl.dionsegijn.konfetti.core.emitter.EmitterConfig;
+import nl.dionsegijn.konfetti.core.models.Shape;
+import nl.dionsegijn.konfetti.core.models.Size;
+import nl.dionsegijn.konfetti.xml.KonfettiView;
+
 import com.seproject.plantry.database.PantryGroup;
 import com.seproject.plantry.database.PantryItem;
 import com.seproject.plantry.utils.PantryViewModel;
@@ -30,6 +39,7 @@ public class AddItemsFragment extends Fragment {
 
     private TextInputEditText nameInput, quantityInput, buyDateInput;
     private AutoCompleteTextView categoryInput;
+    private KonfettiView konfettiView;
     private PantryViewModel viewModel;
     private final Calendar calendar = Calendar.getInstance();
 
@@ -51,6 +61,7 @@ public class AddItemsFragment extends Fragment {
         quantityInput = view.findViewById(R.id.quantityInput);
         categoryInput = view.findViewById(R.id.categoryInput);
         buyDateInput = view.findViewById(R.id.buyDateInput);
+        konfettiView = view.findViewById(R.id.konfettiView);
         FloatingActionButton saveFab = view.findViewById(R.id.saveFab);
         FloatingActionButton cancelFab = view.findViewById(R.id.cancelFab);
 
@@ -140,12 +151,30 @@ public class AddItemsFragment extends Fragment {
         viewModel.addGroup(newGroup);
 
         Toast.makeText(getContext(), "Item saved successfully", Toast.LENGTH_SHORT).show();
+        explodeConfetti();
         clearFields();
         
-        // Go back to the pantry view
+        // Go back to the pantry view after a short delay to see confetti
         if (getActivity() != null) {
-            getActivity().onBackPressed();
+            konfettiView.postDelayed(() -> {
+                if (isAdded()) {
+                    getActivity().onBackPressed();
+                }
+            }, 1500);
         }
+    }
+
+    private void explodeConfetti() {
+        EmitterConfig emitterConfig = new Emitter(100L, java.util.concurrent.TimeUnit.MILLISECONDS).max(100);
+        konfettiView.start(
+                new PartyFactory(emitterConfig)
+                        .spread(360)
+                        .shapes(java.util.Arrays.asList(Shape.Square.INSTANCE, Shape.Circle.INSTANCE))
+                        .colors(java.util.Arrays.asList(0xfce18a, 0xff726d, 0xf4306d, 0xb48def))
+                        .setSpeedBetween(0f, 30f)
+                        .position(0.5, 0.5)
+                        .build()
+        );
     }
 
     private void clearFields() {
