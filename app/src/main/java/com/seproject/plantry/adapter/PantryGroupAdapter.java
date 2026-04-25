@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.core.content.ContextCompat;
 
 import com.seproject.plantry.R;
 import com.seproject.plantry.database.PantryGroup;
@@ -78,9 +79,20 @@ public class PantryGroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return (int) Math.ceil((double) currentFilteredGroups.size() / itemsPerPage);
     }
 
+    private int getExpiryPriority(String state){
+        if ("expired".equals(state)) return 0;
+        if("soon".equals(state)) return 1;
+        return 2; //Safe/null
+    }
     private void updateDisplayList() {
         flatItems.clear();
-        
+        Collections.sort(currentFilteredGroups, (a, b) -> {
+            //first sorts by priority (expired > soon > safe)
+            int p1 = getExpiryPriority(a.expiryState);
+            int p2 = getExpiryPriority(b.expiryState);
+            if (p1 != p2) return Integer.compare(p1, p2);
+            return a.name.compareToIgnoreCase(b.name);
+        });
         int start = currentPage * itemsPerPage;
         int end = Math.min(start + itemsPerPage, currentFilteredGroups.size());
         
@@ -91,16 +103,26 @@ public class PantryGroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         if (!pageItems.isEmpty()) {
             Map<String, List<PantryGroup>> grouped = new HashMap<>();
+            Map<String, Integer> categoryPriority = new HashMap<>();
             for (PantryGroup item : pageItems) {
                 String cat = item.category != null ? item.category : "Uncategorized";
                 if (!grouped.containsKey(cat)) {
                     grouped.put(cat, new ArrayList<>());
                 }
                 grouped.get(cat).add(item);
+                int p=getExpiryPriority(item.expiryState);
+                //Priority based on lowest value (0 is expired).
+                categoryPriority.put(cat,Math.min(categoryPriority.getOrDefault(cat,2),p));
             }
 
             List<String> categories = new ArrayList<>(grouped.keySet());
-            Collections.sort(categories);
+            //Sorted by worst expiration status. If same status, sorts alphabetically.
+            Collections.sort(categories, (c1,c2)->{
+                int p1=categoryPriority.get(c1);
+                int p2=categoryPriority.get(c2);
+                if(p1!=p2) return Integer.compare(p1,p2);
+                return c1.compareToIgnoreCase(c2);
+            });
 
             for (String category : categories) {
                 flatItems.add(category); // Add Header
@@ -153,6 +175,7 @@ public class PantryGroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 itemHolder.statusIcon.setColorFilter(itemHolder.itemView.getContext().getColor(R.color.md_theme_tertiary)); // Yellowish/Orange
             } else {
                 itemHolder.statusIcon.setVisibility(View.GONE);
+                itemHolder.statusIcon.clearColorFilter(); //So that red doesn't go onto safe stuff.
             }
 
             itemHolder.itemView.setOnClickListener(v -> {

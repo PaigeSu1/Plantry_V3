@@ -94,6 +94,8 @@ public class PantryGroupFragment extends Fragment {
                 return true;
             } else if (id == R.id.action_delete) {
                 viewModel.deleteItem(item);
+                //Reminds the view that the expiration data is outdated.
+                viewModel.updateGroupStatus(item.name);
                 return true;
             }
             return false;
@@ -137,6 +139,8 @@ public class PantryGroupFragment extends Fragment {
             item.expirationDate = dateFormat.format(calendar.getTime());
             item.isDefaultDate = false; // User manually picked a date now
             viewModel.updateItem(item);
+            viewModel.updateGroupStatus(groupName);
+
         };
 
         new DatePickerDialog(requireContext(), dateSetListener,

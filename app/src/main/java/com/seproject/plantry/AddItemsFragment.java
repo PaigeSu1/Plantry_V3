@@ -146,8 +146,14 @@ public class AddItemsFragment extends Fragment {
         PantryItem newItem = new PantryItem(name, quantity, date, date, isDefaultDate);
         viewModel.addItem(newItem);
 
+        //Gets item priority.
+        int priority = newItem.getExpirationPriority();
+        String status = "safe";
+        if(priority==0) status = "expired";
+        else if (priority==1) status = "soon";
+
         // Save the group/category if it's new
-        PantryGroup newGroup = new PantryGroup(name, category, "safe");
+        PantryGroup newGroup = new PantryGroup(name, category, status);
         viewModel.addGroup(newGroup);
 
         Toast.makeText(getContext(), "Item saved successfully", Toast.LENGTH_SHORT).show();

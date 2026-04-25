@@ -29,4 +29,7 @@ public interface PantryItemDao {
 
     @Query("DELETE FROM pantry_items WHERE id = :id")
     void deleteById(int id);
+
+    @Query("SELECT * FROM pantry_items WHERE name = :name")
+    List<PantryItem> getItemsByNameSync(String name);
 }

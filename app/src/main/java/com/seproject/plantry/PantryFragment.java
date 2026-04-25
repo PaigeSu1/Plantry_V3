@@ -102,4 +102,9 @@ public class PantryFragment extends Fragment {
         root.findViewById(R.id.prev_page).setAlpha(adapter.getCurrentPage() == 0 ? 0.3f : 1.0f);
         root.findViewById(R.id.next_page).setAlpha(adapter.getCurrentPage() >= adapter.getPageCount() - 1 ? 0.3f : 1.0f);
     }
+    @Override
+    public void onResume(){
+        super.onResume();
+        viewModel.refreshStatus();
+    }
 }
