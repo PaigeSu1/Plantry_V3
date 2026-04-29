@@ -8,6 +8,8 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import com.seproject.plantry.utils.ExpirationStatus;
+
 import java.util.List;
 
 
@@ -28,9 +30,12 @@ public interface PantryGroupDao {
     @Query("SELECT * FROM pantry_groups")
     LiveData<List<PantryGroup>> getAllItems();
 
+    @Query("SELECT * FROM pantry_groups WHERE EXISTS (SELECT 1 FROM pantry_items WHERE pantry_groups.name = pantry_items.name)")
+    LiveData<List<PantryGroup>> getAllNonEmptyGroups();
+
     @Query("SELECT * FROM pantry_groups")
     List<PantryGroup>getAllGroupsSync();
 
     @Query("UPDATE pantry_groups SET expiryState= :status WHERE name = :name")
-    void updateStatus (String name, String status);
+    void updateStatus (String name, ExpirationStatus status);
 }

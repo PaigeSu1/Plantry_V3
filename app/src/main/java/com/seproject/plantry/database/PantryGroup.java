@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.seproject.plantry.utils.ExpirationStatus;
+
 import java.util.Objects;
 
 /// The type used for pantry groups (i.e., Apple, Potato, etc.) as opposed to a specific item (e.g., apples purchased on a particular date)
@@ -15,14 +17,9 @@ public class PantryGroup {
     public String name;
     public String category;
     /// The current state of the items contained within the group
-    /// Should have one of four values: 'none', 'safe', 'soon', or 'expired'
-    /// 'none' is used for non-perishable goods
-    /// 'safe' should be used when there are no items that are expiring soon or have done so already
-    /// 'soon' should be used if there is at least one item expiring soon and none that have already expired
-    /// 'expired' should be used if there is at least one expired item
-    public String expiryState;
+    public ExpirationStatus expiryState;
 
-    public PantryGroup(@NonNull String name, String category, String expiryState) {
+    public PantryGroup(@NonNull String name, String category, ExpirationStatus expiryState) {
         this.name = name;
         this.category = category;
         this.expiryState = expiryState;
@@ -44,5 +41,9 @@ public class PantryGroup {
     @Override
     public int hashCode() {
         return Objects.hash(name, category, expiryState);
+    }
+
+    public ExpirationStatus getExpiryState() {
+        return expiryState;
     }
 }

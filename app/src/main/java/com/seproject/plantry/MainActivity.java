@@ -45,6 +45,15 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = navHostFragment.getNavController();
         BottomNavigationView navbar = findViewById(R.id.nav_toolbar);
         NavigationUI.setupWithNavController(navbar, navController);
+
+        navController.addOnDestinationChangedListener((controller, destination, args) -> {
+            if (destination.getId() == R.id.pantryGroupFragment) {
+                if (args != null) {
+                    String groupName = args.getString("groupName");
+                    destination.setLabel(groupName != null ? groupName : "Item Name");
+                }
+            }
+        });
     }
 
     /// Sets the theme of the app (ensures that it is actually set on start up!)

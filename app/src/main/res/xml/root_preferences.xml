@@ -17,12 +17,13 @@
             android:title="Notifications"
             android:icon="@drawable/ic_notifications" />
 
-        <EditTextPreference
+        <SeekBarPreference
             android:dependency="send_notifications"
+            app:showSeekBarValue="true"
+            android:min="1"
+            android:max="14"
             android:defaultValue="3"
-            android:key="expiration_warning_threshold"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
+            android:key="notification_threshold"
             android:title="Expiration Warning"
             android:summary="When to warn about expiring food"
             android:icon="@drawable/ic_schedule" />

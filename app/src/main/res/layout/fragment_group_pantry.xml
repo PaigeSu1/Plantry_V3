@@ -14,20 +14,6 @@
         app:title="Item Details"
         app:titleCentered="false" />
 
-    <!-- Big Item Name Header -->
-    <TextView
-        android:id="@+id/pantry_group_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="Gala Apple"
-        android:textColor="@color/md_theme_onSurface"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pantry_group_toolbar" />
-
     <!-- Column Headers -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header_row"
@@ -36,7 +22,7 @@
         android:paddingHorizontal="16dp"
         android:paddingTop="16dp"
         android:paddingBottom="8dp"
-        app:layout_constraintTop_toBottomOf="@id/pantry_group_title">
+        app:layout_constraintTop_toBottomOf="@id/pantry_group_toolbar">
 
         <TextView
             android:id="@+id/qty_header"
@@ -44,8 +30,8 @@
             android:layout_height="wrap_content"
             android:text="Qty"
             android:textColor="@color/md_theme_onSurfaceVariant"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@+id/exp_header"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@id/exp_header"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -56,11 +42,15 @@
             android:layout_height="wrap_content"
             android:text="Exp. Date"
             android:textColor="@color/md_theme_onSurfaceVariant"
-            android:textSize="14sp"
+            android:textSize="16sp"
+            android:layout_marginEnd="64dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toEndOf="@+id/qty_header"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Invisible view to occupy space for alignment -->
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView

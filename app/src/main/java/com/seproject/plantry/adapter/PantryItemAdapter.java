@@ -14,20 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.seproject.plantry.R;
 import com.seproject.plantry.database.PantryItem;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class PantryItemAdapter extends RecyclerView.Adapter<PantryItemAdapter.PantryViewHolder> {
 
     private List<PantryItem> items;
-    private OnItemMenuClickListener menuListener;
-
-    public interface OnItemMenuClickListener {
-        void onMenuClick(View view, PantryItem item);
-    }
+    private final OnItemMenuClickListener menuListener;
 
     public PantryItemAdapter(List<PantryItem> items, OnItemMenuClickListener menuListener) {
         this.items = items;
@@ -38,7 +30,7 @@ public class PantryItemAdapter extends RecyclerView.Adapter<PantryItemAdapter.Pa
     @Override
     public PantryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_pantry_batch, parent, false);
+                .inflate(R.layout.item_pantry, parent, false);
         return new PantryViewHolder(view);
     }
 
@@ -46,7 +38,7 @@ public class PantryItemAdapter extends RecyclerView.Adapter<PantryItemAdapter.Pa
     public void onBindViewHolder(@NonNull PantryViewHolder holder, int position) {
         PantryItem item = items.get(position);
         holder.quantity.setText(String.valueOf(item.quantity));
-        holder.expiration.setText(item.expirationDate);
+        holder.expiration.setText(item.expirationDate.toString());
 
         // Handle Status Icon and Default Date indicator
         updateStatusIcon(holder, item);
@@ -69,50 +61,41 @@ public class PantryItemAdapter extends RecyclerView.Adapter<PantryItemAdapter.Pa
             return;
         }
 
-        if (item.isDefaultDate) {
-            holder.statusIcon.setVisibility(View.VISIBLE);
-            holder.statusIcon.setImageResource(R.drawable.ic_schedule);
-            holder.statusIcon.setColorFilter(holder.itemView.getContext().getColor(R.color.md_theme_primary));
-            TooltipCompat.setTooltipText(holder.statusIcon, "Default date entered");
+        if (item.expirationDate == null) {
+            holder.statusIcon.setVisibility(View.INVISIBLE);
             return;
         }
 
-        if (item.expirationDate == null || item.expirationDate.isEmpty()) {
-            holder.statusIcon.setVisibility(View.GONE);
-            return;
-        }
-
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
-            Date expDate = sdf.parse(item.expirationDate);
-            Date today = new Date();
-            
-            long diff = expDate.getTime() - today.getTime();
-            long days = diff / (24 * 60 * 60 * 1000);
-
-            if (diff < 0) {
-                // Expired
+        switch (item.getExpirationStatus()) {
+            case EXPIRED:
                 holder.statusIcon.setVisibility(View.VISIBLE);
                 holder.statusIcon.setImageResource(R.drawable.ic_error);
                 holder.statusIcon.setColorFilter(holder.itemView.getContext().getColor(R.color.md_theme_error));
                 TooltipCompat.setTooltipText(holder.statusIcon, "Expired");
-            } else if (days <= 7) {
-                // Expiring soon (within 7 days)
+                break;
+            case SOON:
                 holder.statusIcon.setVisibility(View.VISIBLE);
                 holder.statusIcon.setImageResource(R.drawable.ic_error);
-                holder.statusIcon.setColorFilter(holder.itemView.getContext().getColor(R.color.md_theme_tertiary));
+                holder.statusIcon.setColorFilter(holder.itemView.getContext().getColor(R.color.md_theme_onSurface));
                 TooltipCompat.setTooltipText(holder.statusIcon, "Expiring Soon");
-            } else {
-                holder.statusIcon.setVisibility(View.GONE);
-            }
-        } catch (ParseException e) {
-            holder.statusIcon.setVisibility(View.GONE);
+                break;
+            default:
+                holder.statusIcon.setVisibility(View.INVISIBLE);
         }
     }
 
     @Override
     public int getItemCount() {
         return items != null ? items.size() : 0;
+    }
+
+    public void setItems(List<PantryItem> items) {
+        this.items = items;
+        notifyDataSetChanged();
+    }
+
+    public interface OnItemMenuClickListener {
+        void onMenuClick(View view, PantryItem item);
     }
 
     static class PantryViewHolder extends RecyclerView.ViewHolder {
@@ -124,13 +107,8 @@ public class PantryItemAdapter extends RecyclerView.Adapter<PantryItemAdapter.Pa
             super(itemView);
             quantity = itemView.findViewById(R.id.item_quantity);
             expiration = itemView.findViewById(R.id.item_expiration_date);
-            statusIcon = itemView.findViewById(R.id.item_status_icon);
+            statusIcon = itemView.findViewById(R.id.status_icon);
             moreButton = itemView.findViewById(R.id.item_more_button);
         }
-    }
-
-    public void setItems(List<PantryItem> items) {
-        this.items = items;
-        notifyDataSetChanged();
     }
 }

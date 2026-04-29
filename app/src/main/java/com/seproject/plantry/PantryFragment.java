@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,8 +51,7 @@ public class PantryFragment extends Fragment {
         adapter = new PantryGroupAdapter(new ArrayList<>(), group -> {
             Bundle bundle = new Bundle();
             bundle.putString("groupName", group.name);
-            androidx.navigation.fragment.NavHostFragment.findNavController(this)
-                    .navigate(R.id.action_pantryFragment_to_pantryGroupFragment, bundle);
+            NavHostFragment.findNavController(this).navigate(R.id.action_pantryFragment_to_pantryGroupFragment, bundle);
         });
         recyclerView.setAdapter(adapter);
 
@@ -69,7 +70,8 @@ public class PantryFragment extends Fragment {
         });
 
         // Observe the database and update the list when data changes
-        viewModel.getGroups().observe(getViewLifecycleOwner(), groups -> {
+        // Only get groups that actually have something in them
+        viewModel.getNonEmptyGroups().observe(getViewLifecycleOwner(), groups -> {
             if (groups != null) {
                 adapter.setAllGroups(groups);
                 updatePagination(root);

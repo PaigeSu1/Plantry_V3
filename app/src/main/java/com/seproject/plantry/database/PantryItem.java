@@ -1,10 +1,20 @@
 package com.seproject.plantry.database;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
+import android.content.SharedPreferences;
+
+import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.seproject.plantry.utils.ExpirationStatus;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -27,16 +37,16 @@ public class PantryItem {
     public int id;
     public String name;
     public int quantity;
-    public String buyDate;
-    public String expirationDate; // represents the time stamp
-    public boolean isDefaultDate;
+    @Nullable
+    public LocalDate buyDate;
+    @Nullable
+    public LocalDate expirationDate; // represents the time stamp
 
-    public PantryItem(String name, int quantity, String buyDate, String expirationDate, boolean isDefaultDate) {
+    public PantryItem(String name, int quantity, @Nullable LocalDate buyDate, @Nullable LocalDate expirationDate) {
         this.name = name;
         this.quantity = quantity;
         this.buyDate = buyDate;
         this.expirationDate = expirationDate;
-        this.isDefaultDate = isDefaultDate;
     }
 
     public int getId() {
@@ -61,35 +71,20 @@ public class PantryItem {
         return Objects.hash(id, quantity, buyDate, expirationDate);
     }
 
-    public int getExpirationPriority() {
+    public ExpirationStatus getExpirationStatus() {
+
         // Defaults to safe (2)
-        if (isDefaultDate || expirationDate == null || expirationDate.isEmpty()) {
-            return 2;
+        if (expirationDate == null) {
+            return ExpirationStatus.SAFE;
         }
 
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
-            Date expiry = sdf.parse(expirationDate);
+        LocalDate today = LocalDate.now();
 
-            // Get today's date at midnight for comparison
-            Calendar cal = Calendar.getInstance();
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            Date today = cal.getTime();
+        // Yells about a potential null pointer, but if expiration date is empty/null, it's caught earlier in the function.
+        if (expirationDate.isBefore(today)) return ExpirationStatus.EXPIRED;
 
-            //Yells about a potential null pointer, but if expiration date is empty/null, it's caught earlier in the function.
-            if (expiry.before(today)) return 0;
-
-            long diffInMs = expiry.getTime() - today.getTime();
-            long diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMs);
-
-            //If expiring within 3 days, 1 (expiring soon). Otherwise, 2 (safe).
-            return (diffInDays <= 3) ? 1 : 2;
-        } catch (ParseException e) {
-            return 2; // Assumes safe if there's a formatting problem or something.
-        }
+        // If expiring within 3 days, 1 (expiring soon). Otherwise, 2 (safe).
+        return (ChronoUnit.DAYS.between(today, expirationDate) <= 3) ? ExpirationStatus.SOON : ExpirationStatus.SAFE;
     }
 
 

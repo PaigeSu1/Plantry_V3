@@ -17,7 +17,7 @@
     <fragment
         android:id="@+id/pantryGroupFragment"
         android:name="com.seproject.plantry.PantryGroupFragment"
-        android:label="Group Details"
+        android:label=""
         tools:layout="@layout/fragment_group_pantry">
         <argument
             android:name="groupName"

@@ -1,7 +1,6 @@
 package com.seproject.plantry;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -22,14 +21,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.seproject.plantry.adapter.PantryItemAdapter;
 import com.seproject.plantry.database.PantryItem;
 import com.seproject.plantry.utils.PantryViewModel;
 
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
 
 public class PantryGroupFragment extends Fragment {
 
@@ -48,23 +48,18 @@ public class PantryGroupFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_group_pantry, container, false);
-        
+
         if (getArguments() != null) {
             groupName = getArguments().getString("groupName");
         }
 
         MaterialToolbar toolbar = root.findViewById(R.id.pantry_group_toolbar);
-        // Ensure the title is the name of the food (e.g., Apple)
-        toolbar.setTitle(groupName != null ? groupName : "Item Details");
-        
+
         NavController navController = NavHostFragment.findNavController(this);
         NavigationUI.setupWithNavController(toolbar, navController);
 
         RecyclerView recyclerView = root.findViewById(R.id.pantry_group_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        TextView titleView = root.findViewById(R.id.pantry_group_title);
-        titleView.setText(groupName != null ? groupName : "Item Details");
 
         viewModel = new ViewModelProvider(requireActivity()).get(PantryViewModel.class);
 
@@ -83,14 +78,14 @@ public class PantryGroupFragment extends Fragment {
     private void showItemMenu(View view, PantryItem item) {
         PopupMenu popup = new PopupMenu(getContext(), view);
         popup.getMenuInflater().inflate(R.menu.menu_item_options, popup.getMenu());
-        
+
         popup.setOnMenuItemClickListener(menuItem -> {
             int id = menuItem.getItemId();
             if (id == R.id.action_edit_qty) {
                 showUpdateQuantityDialog(item);
                 return true;
             } else if (id == R.id.action_edit_date) {
-                showChangeDateDialog(item);
+                showChangeExpirationDateDialog(item);
                 return true;
             } else if (id == R.id.action_delete) {
                 viewModel.deleteItem(item);
@@ -114,8 +109,7 @@ public class PantryGroupFragment extends Fragment {
 
         builder.setPositiveButton("Update", (dialog, which) -> {
             try {
-                int newQty = Integer.parseInt(input.getText().toString());
-                item.quantity = newQty;
+                item.quantity = Integer.parseInt(input.getText().toString());
                 viewModel.updateItem(item);
             } catch (NumberFormatException e) {
                 // Ignore invalid input
@@ -126,25 +120,19 @@ public class PantryGroupFragment extends Fragment {
         builder.show();
     }
 
-    private void showChangeDateDialog(PantryItem item) {
-        final Calendar calendar = Calendar.getInstance();
-        
-        DatePickerDialog.OnDateSetListener dateSetListener = (view, year, month, dayOfMonth) -> {
-            calendar.set(Calendar.YEAR, year);
-            calendar.set(Calendar.MONTH, month);
-            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            
-            String myFormat = "MM/dd/yyyy";
-            SimpleDateFormat dateFormat = new SimpleDateFormat(myFormat, Locale.US);
-            item.expirationDate = dateFormat.format(calendar.getTime());
-            item.isDefaultDate = false; // User manually picked a date now
-            viewModel.updateItem(item);
-            viewModel.updateGroupStatus(groupName);
+    private void showChangeExpirationDateDialog(PantryItem item) {
+        MaterialDatePicker<Long> picker = MaterialDatePicker.Builder.datePicker().setTitleText("Select a date").setSelection(item.expirationDate != null ? item.expirationDate.toEpochDay() : MaterialDatePicker.todayInUtcMilliseconds()).build();
 
-        };
+        picker.show(requireActivity().getSupportFragmentManager(), "MATERIAL_DATE_PICKER");
 
-        new DatePickerDialog(requireContext(), dateSetListener,
-                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)).show();
+        picker.addOnPositiveButtonClickListener(selection -> {
+            LocalDate selectedDate = Instant.ofEpochMilli(selection).atZone(ZoneId.systemDefault()).toLocalDate();
+
+            if (selectedDate != null) {
+                item.expirationDate = selectedDate;
+                viewModel.updateItem(item);
+                viewModel.updateGroupStatus(groupName);
+            }
+        });
     }
 }

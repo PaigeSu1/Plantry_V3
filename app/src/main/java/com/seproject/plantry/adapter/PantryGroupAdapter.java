@@ -8,33 +8,29 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.core.content.ContextCompat;
 
 import com.seproject.plantry.R;
 import com.seproject.plantry.database.PantryGroup;
+import com.seproject.plantry.utils.ExpirationStatus;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class PantryGroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
+    private static final int ITEMS_PER_PAGE = 10;
 
-    private List<Object> flatItems = new ArrayList<>();
+    private final List<Object> flatItems = new ArrayList<>();
+    private final OnItemClickListener listener;
     private List<PantryGroup> allGroups = new ArrayList<>();
     private List<PantryGroup> currentFilteredGroups = new ArrayList<>();
-    private OnItemClickListener listener;
-    
-    private int itemsPerPage = 10;
     private int currentPage = 0;
-
-    public interface OnItemClickListener {
-        void onItemClick(PantryGroup group);
-    }
 
     public PantryGroupAdapter(List<PantryGroup> items, OnItemClickListener listener) {
         this.listener = listener;
@@ -50,23 +46,13 @@ public class PantryGroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (query.isEmpty()) {
             currentFilteredGroups = new ArrayList<>(allGroups);
         } else {
-            currentFilteredGroups = new ArrayList<>();
             String lowerQuery = query.toLowerCase();
-            for (PantryGroup g : allGroups) {
-                boolean matchesName = g.name.toLowerCase().contains(lowerQuery);
-                boolean matchesCategory = g.category != null && g.category.toLowerCase().contains(lowerQuery);
-                
-                if (matchesName || matchesCategory) {
-                    currentFilteredGroups.add(g);
-                }
-            }
+            currentFilteredGroups = allGroups.stream().filter(g ->
+                    g.name.toLowerCase().contains(lowerQuery) || g.category.toLowerCase().contains(lowerQuery)
+            ).collect(Collectors.toList());
         }
-        currentPage = 0;
-        updateDisplayList();
-    }
 
-    public void setCurrentPage(int page) {
-        this.currentPage = page;
+        currentPage = 0;
         updateDisplayList();
     }
 
@@ -74,61 +60,53 @@ public class PantryGroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return currentPage;
     }
 
-    public int getPageCount() {
-        if (currentFilteredGroups.isEmpty()) return 1;
-        return (int) Math.ceil((double) currentFilteredGroups.size() / itemsPerPage);
+    public void setCurrentPage(int page) {
+        this.currentPage = page;
+        updateDisplayList();
     }
 
-    private int getExpiryPriority(String state){
-        if ("expired".equals(state)) return 0;
-        if("soon".equals(state)) return 1;
-        return 2; //Safe/null
+    public int getPageCount() {
+        if (currentFilteredGroups.isEmpty()) return 1;
+        return (int) Math.ceil((double) currentFilteredGroups.size() / ITEMS_PER_PAGE);
     }
+
     private void updateDisplayList() {
         flatItems.clear();
-        Collections.sort(currentFilteredGroups, (a, b) -> {
-            //first sorts by priority (expired > soon > safe)
-            int p1 = getExpiryPriority(a.expiryState);
-            int p2 = getExpiryPriority(b.expiryState);
-            if (p1 != p2) return Integer.compare(p1, p2);
-            return a.name.compareToIgnoreCase(b.name);
-        });
-        int start = currentPage * itemsPerPage;
-        int end = Math.min(start + itemsPerPage, currentFilteredGroups.size());
-        
+        currentFilteredGroups.sort(Comparator.comparing(PantryGroup::getExpiryState));
+        int start = currentPage * ITEMS_PER_PAGE;
+        int end = Math.min(start + ITEMS_PER_PAGE, currentFilteredGroups.size());
+
         List<PantryGroup> pageItems = new ArrayList<>();
         if (start < currentFilteredGroups.size()) {
             pageItems = currentFilteredGroups.subList(start, end);
         }
 
         if (!pageItems.isEmpty()) {
-            Map<String, List<PantryGroup>> grouped = new HashMap<>();
-            Map<String, Integer> categoryPriority = new HashMap<>();
+            Map<String, List<PantryGroup>> categoryGroups = new HashMap<>();
+            Map<String, ExpirationStatus> categoryStatuses = new HashMap<>();
+
             for (PantryGroup item : pageItems) {
-                String cat = item.category != null ? item.category : "Uncategorized";
-                if (!grouped.containsKey(cat)) {
-                    grouped.put(cat, new ArrayList<>());
+                String category = item.category != null ? item.category : "Uncategorized";
+
+                if (!categoryGroups.containsKey(category)) {
+                    categoryGroups.put(category, new ArrayList<>());
                 }
-                grouped.get(cat).add(item);
-                int p=getExpiryPriority(item.expiryState);
-                //Priority based on lowest value (0 is expired).
-                categoryPriority.put(cat,Math.min(categoryPriority.getOrDefault(cat,2),p));
+
+                categoryGroups.get(category).add(item);
+
+                // Priority based on lowest value (0 is expired).
+                categoryStatuses.put(category, item.expiryState);
             }
 
-            List<String> categories = new ArrayList<>(grouped.keySet());
-            //Sorted by worst expiration status. If same status, sorts alphabetically.
-            Collections.sort(categories, (c1,c2)->{
-                int p1=categoryPriority.get(c1);
-                int p2=categoryPriority.get(c2);
-                if(p1!=p2) return Integer.compare(p1,p2);
-                return c1.compareToIgnoreCase(c2);
-            });
+            // Sorted by worst expiration status. If same status, sorts alphabetically.
+            List<String> categories = categoryStatuses.entrySet().stream().sorted(Map.Entry.comparingByValue()).map(Map.Entry::getKey).collect(Collectors.toList());
 
             for (String category : categories) {
                 flatItems.add(category); // Add Header
-                flatItems.addAll(grouped.get(category));
+                flatItems.addAll(categoryGroups.get(category));
             }
         }
+
         notifyDataSetChanged();
     }
 
@@ -150,7 +128,7 @@ public class PantryGroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_category_header, parent, false);
             return new HeaderViewHolder(view);
         } else {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pantry, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group, parent, false);
             return new ItemViewHolder(view);
         }
     }
@@ -163,19 +141,22 @@ public class PantryGroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             PantryGroup group = (PantryGroup) flatItems.get(position);
             ItemViewHolder itemHolder = (ItemViewHolder) holder;
             itemHolder.name.setText(group.name);
-            
+
             // Handle Status Icon based on expiryState
-            if ("expired".equals(group.expiryState)) {
-                itemHolder.statusIcon.setVisibility(View.VISIBLE);
-                itemHolder.statusIcon.setImageResource(R.drawable.ic_error);
-                itemHolder.statusIcon.setColorFilter(itemHolder.itemView.getContext().getColor(R.color.md_theme_error));
-            } else if ("soon".equals(group.expiryState)) {
-                itemHolder.statusIcon.setVisibility(View.VISIBLE);
-                itemHolder.statusIcon.setImageResource(R.drawable.ic_error); // Replace with warning icon if available
-                itemHolder.statusIcon.setColorFilter(itemHolder.itemView.getContext().getColor(R.color.md_theme_tertiary)); // Yellowish/Orange
-            } else {
-                itemHolder.statusIcon.setVisibility(View.GONE);
-                itemHolder.statusIcon.clearColorFilter(); //So that red doesn't go onto safe stuff.
+            switch (group.expiryState) {
+                case EXPIRED:
+                    itemHolder.statusIcon.setVisibility(View.VISIBLE);
+                    itemHolder.statusIcon.setImageResource(R.drawable.ic_error);
+                    itemHolder.statusIcon.setColorFilter(itemHolder.itemView.getContext().getColor(R.color.md_theme_error));
+                    break;
+                case SOON:
+                    itemHolder.statusIcon.setVisibility(View.VISIBLE);
+                    itemHolder.statusIcon.setImageResource(R.drawable.ic_error); // Replace with warning icon if available
+                    itemHolder.statusIcon.setColorFilter(itemHolder.itemView.getContext().getColor(R.color.md_theme_onSecondaryContainer)); // Yellowish/Orange
+                    break;
+                default:
+                    itemHolder.statusIcon.setVisibility(View.INVISIBLE);
+                    itemHolder.statusIcon.clearColorFilter(); //So that red doesn't go onto safe stuff.
             }
 
             itemHolder.itemView.setOnClickListener(v -> {
@@ -189,8 +170,13 @@ public class PantryGroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return flatItems.size();
     }
 
+    public interface OnItemClickListener {
+        void onItemClick(PantryGroup group);
+    }
+
     static class HeaderViewHolder extends RecyclerView.ViewHolder {
         TextView headerText;
+
         HeaderViewHolder(View itemView) {
             super(itemView);
             headerText = itemView.findViewById(R.id.category_header);
@@ -200,10 +186,11 @@ public class PantryGroupAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     static class ItemViewHolder extends RecyclerView.ViewHolder {
         TextView name;
         ImageView statusIcon;
+
         ItemViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.item_name);
-            statusIcon = itemView.findViewById(R.id.item_status_icon);
+            statusIcon = itemView.findViewById(R.id.status_icon);
         }
     }
 }
