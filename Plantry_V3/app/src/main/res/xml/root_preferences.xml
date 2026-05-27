@@ -1,0 +1,31 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory app:title="Visual Settings">
+        <ListPreference
+            android:key="theme_selection"
+            android:title="@string/theme_selection"
+            android:summary="Select app theme"
+            android:entries="@array/theme_options"
+            android:entryValues="@array/theme_values"
+            android:icon="@drawable/ic_mode_selection" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Notification Settings">
+        <SwitchPreferenceCompat
+            android:key="send_notifications"
+            android:title="Notifications"
+            android:icon="@drawable/ic_notifications" />
+
+        <SeekBarPreference
+            android:dependency="send_notifications"
+            app:showSeekBarValue="true"
+            android:min="1"
+            android:max="14"
+            android:defaultValue="3"
+            android:key="notification_threshold"
+            android:title="Expiration Warning"
+            android:summary="When to warn about expiring food"
+            android:icon="@drawable/ic_schedule" />
+    </PreferenceCategory>
+</PreferenceScreen>

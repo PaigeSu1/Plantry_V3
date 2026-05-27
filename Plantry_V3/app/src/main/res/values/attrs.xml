@@ -1,0 +1,6 @@
+<resources>
+    <attr name="colorCaution" format="color"/>
+    <attr name="colorOnCaution" format="color"/>
+    <attr name="colorCautionContainer" format="color"/>
+    <attr name="colorOnCautionContainer" format="color"/>
+</resources>

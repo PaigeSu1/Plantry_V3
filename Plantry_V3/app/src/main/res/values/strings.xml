@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">Plantry</string>
+
+    <!-- Tab labels -->
+    <string name="pantry">Pantry</string>
+    <string name="add_items">Add Items</string>
+    <string name="settings">Settings</string>
+
+    <!-- Sync Preferences -->
+    <string name="theme_selection">Select theme</string>
+    <string name="item_name">Item Name</string>
+    <string name="qty">Qty</string>
+    <string name="expiration">Expiration</string>
+    <string name="search_pantry">Search Pantry</string>
+    <string name="sort_button">Sort the pantry</string>
+    <string name="buy">Buy</string>
+    <string name="warning_icon">Informs the user of approaching or past expiry</string>
+    <string name="show_more_options">Show more options</string>
+    <string name="navigate_to_the_group_viewer">Navigate to the group viewer</string>
+    <string name="manual">Manual</string>
+    <string name="scan">Scan</string>
+    <string name="has_expiration_date">Has Expiration Date</string>
+    <string name="buy_date">Buy Date</string>
+    <string name="expiration_date">Expiration Date</string>
+    <string name="input_hint">Input</string>
+    <string name="date_hint">mm/dd/yyyy</string>
+    <string name="category">Category</string>
+    <string name="rename">Rename</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+</resources>
