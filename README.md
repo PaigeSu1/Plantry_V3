@@ -15,6 +15,9 @@ This project focuses on combining inventory management, AI-powered suggestions, 
 ### Implemented 
 * Allows the user to create and manage a digital pantry.
 * In app warnings for expringing and expired food. 
+---
+
+## Planned
 
 ###  User Interface
 
@@ -29,10 +32,6 @@ This project focuses on combining inventory management, AI-powered suggestions, 
 * Weekly meal prep planning system
 * Generates meal plans suggestions based on available pantry items
 * Automated reminders (Based on Time Zone) 
-
-  * ⏰ Breakfast – 7:00 AM
-  * ⏰ Lunch – 12:00 PM
-  * ⏰ Dinner – 5:00 PM
 
 ---
 
