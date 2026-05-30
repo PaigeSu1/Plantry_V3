@@ -144,6 +144,24 @@
     <color name="colorOnCaution">#393000</color>
     <color name="colorCautionContainer">#FFDE03</color>
     <color name="colorOnCautionContainer">#716200</color>
+
+    <!-- Category Colors (Dark Mode) -->
+    <color name="cat_fridge_bg">#1A237E</color>
+    <color name="cat_fridge_text">#90CAF9</color>
+    <color name="cat_freezer_bg">#01579B</color>
+    <color name="cat_freezer_text">#81D4FA</color>
+    <color name="cat_pantry_bg">#5D4037</color>
+    <color name="cat_pantry_text">#FFCC80</color>
+    <color name="cat_counter_bg">#1B5E20</color>
+    <color name="cat_counter_text">#A5D6A7</color>
+
+    <!-- Status Colors (Dark Mode) -->
+    <color name="status_expired_bg">#310001</color>
+    <color name="status_expired_stroke">#FF8A80</color>
+    <color name="status_warning_bg">#332B00</color>
+    <color name="status_warning_stroke">#FFF176</color>
+    <color name="status_ok_bg">#1D2024</color>
+    <color name="status_ok_stroke">#44474E</color>
     <color name="colorCaution_mediumContrast">#FFFAF8</color>
     <color name="colorOnCaution_mediumContrast">#393000</color>
     <color name="colorCautionContainer_mediumContrast">#FFDE03</color>
