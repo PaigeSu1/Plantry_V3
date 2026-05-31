@@ -80,16 +80,6 @@ This project focuses on combining inventory management, AI-powered suggestions, 
 
 ---
 
-###  Calorie Tracker
-
-* Track calorie intake for food items
-* Data sources:
-
-  * Manual user input
-  * Integration with well-known food data sources (planned)
-
----
-
 ### Allergy Management
 
 * Tag and sort items by allergens
